@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NetSpeed Pro - lil-lotus出品</title>
+    
+    <!-- 外部依赖 -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css">
+    <!-- 引入你自己的 CSS -->
+    <link rel="stylesheet" href="style.css">
+
+    <!-- Microsoft Clarity -->
+    <script type="text/javascript">
+        (function(c, l, a, r, i, t, y) {
+            c[a] = c[a] || function() {
+                (c[a].q = c[a].q || []).push(arguments)
+            };
+            t = l.createElement(r);
+            t.async = 1;
+            t.src = "https://www.clarity.ms/tag/" + i;
+            y = l.getElementsByTagName(r)[0];
+            y.parentNode.insertBefore(t, y);
+        })(window, document, "clarity", "script", "x8gzfnemad");
+    </script>
+</head>
+
+<body>
+    <!-- ========== 全屏LOGO页 ========== -->
+    <div id="splash">
+        <div class="splash-logo">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path>
+            </svg>
+        </div>
+        <div class="splash-title">NetSpeed Pro</div>
+        <div class="splash-sub">专业网络测速引擎</div>
+        <div class="splash-author">— <strong>lil-lotus</strong> 出品 —</div>
+        <div class="splash-bar"></div>
+        <div class="splash-countdown" id="countdown">加载中…</div>
+        <div class="splash-footer">© <span>lil-lotus</span> · NetSpeed Pro · Professional Network Diagnostics</div>
+    </div>
+
+    <!-- ========== 测速主界面 ========== -->
+    <div id="main">
+        <!-- 背景装饰 -->
+        <div class="bg-orbs">
+            <div class="orb orb1"></div>
+            <div class="orb orb2"></div>
+            <div class="orb orb3"></div>
+        </div>
+        <div class="particles" id="particles"></div>
+
+        <!-- 顶部状态栏 -->
+        <div class="top-bar">
+            <div class="brand">
+                <div class="brand-logo">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"></path>
+                    </svg>
+                </div>
+                NetSpeed Pro
+                <span class="brand-author">| <strong>lil-lotus出品</strong></span>
+            </div>
+            <div class="left">
+                <div class="dot" id="statusDot"></div>
+                <span id="netStatus">网络已连接</span>
+            </div>
+            <div class="right">
+                <div class="signal-icon">
+                    <span></span><span></span><span></span><span></span>
+                </div>
+                <span id="netType">检测中…</span>
+            </div>
+        </div>
+
+        <!-- 主内容区 -->
+        <div class="main-content">
+            <!-- 左侧面板 -->
+            <div class="left-panel">
+                <!-- 仪表盘 -->
+                <div class="gauge-wrap">
+                    <svg class="gauge-svg" width="280" height="280" viewBox="0 0 280 280">
+                        <defs>
+                            <linearGradient id="gaugeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" stop-color="#4f6ef7"></stop>
+                                <stop offset="50%" stop-color="#6c5ce7"></stop>
+                                <stop offset="100%" stop-color="#a855f7"></stop>
+                            </linearGradient>
+                            <filter id="glow">
+                                <feGaussianBlur stdDeviation="3" result="coloredBlur"></feGaussianBlur>
+                                <feMerge>
+                                    <feMergeNode in="coloredBlur"></feMergeNode>
+                                    <feMergeNode in="SourceGraphic"></feMergeNode>
+                                </feMerge>
+                            </filter>
+                        </defs>
+                        <circle class="gauge-bg-glow" cx="140" cy="140" r="110"></circle>
+                        <circle class="gauge-track" cx="140" cy="140" r="110"></circle>
+                        <circle class="gauge-progress" id="gaugeProgress" cx="140" cy="140" r="110"></circle>
+                    </svg>
+                    <div class="gauge-center">
+                        <div class="gauge-value" id="gaugeValue">0</div>
+                        <div class="gauge-unit" id="gaugeUnit">Mbps</div>
+                        <div class="gauge-label" id="gaugeLabel">点击下方开始测速</div>
+                    </div>
+                </div>
+
+                <!-- 质量评级 -->
+                <div class="quality-badge">
+                    <span class="badge badge-unknown" id="qualityBadge">等待测速</span>
+                </div>
+
+                <!-- 三列数据卡片 -->
+                <div class="stats-row">
+                    <div class="stat-card" id="cardPing">
+                        <div class="icon">📡</div>
+                        <div class="name">延迟 Ping</div>
+                        <div class="val" id="valPing">--</div>
+                        <div class="unit">ms</div>
+                    </div>
+                    <div class="stat-card" id="cardDown">
+                        <div class="icon">⬇️</div>
+                        <div class="name">下载</div>
+                        <div class="val" id="valDown">--</div>
+                        <div class="unit">Mbps</div>
+                    </div>
+                    <div class="stat-card" id="cardUp">
+                        <div class="icon">⬆️</div>
+                        <div class="name">上传</div>
+                        <div class="val" id="valUp">--</div>
+                        <div class="unit">Mbps</div>
+                    </div>
+                </div>
+
+                <!-- 详细指标 -->
+                <div class="detail-row">
+                    <div class="detail-card">
+                        <div class="d-name">抖动 Jitter</div>
+                        <div class="d-val" id="valJitter">--</div>
+                        <div class="d-unit">ms</div>
+                    </div>
+                    <div class="detail-card">
+                        <div class="d-name">丢包率</div>
+                        <div class="d-val" id="valLoss">--</div>
+                        <div class="d-unit">%</div>
+                    </div>
+                    <div class="detail-card">
+                        <div class="d-name">IP 地址</div>
+                        <div class="d-val" id="valIP" style="font-size:12px;">--</div>
+                        <div class="d-unit">&nbsp;</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 右侧面板 -->
+            <div class="right-panel">
+                <!-- 网络信息 -->
+                <div class="info-card">
+                    <div class="card-title">网络信息</div>
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <span class="label">运营商</span>
+                            <span class="value loading" id="infoISP">检测中…</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="label">连接类型</span>
+                            <span class="value loading" id="infoConn">检测中…</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="label">地理位置</span>
+                            <span class="value loading" id="infoGeo">检测中…</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="label">浏览器</span>
+                            <span class="value" id="infoBrowser">--</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="label">下行峰值</span>
+                            <span class="value" id="infoDownMax">--</span>
+                        </div>
+                        <div class="info-item">
+                            <span class="label">上行峰值</span>
+                            <span class="value" id="infoUpMax">--</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 速度图表 -->
+                <div class="chart-card">
+                    <div class="chart-header">
+                        <div class="chart-title">实时速度曲线</div>
+                        <div class="chart-legend">
+                            <span><i class="legend-down"></i>下载</span>
+                            <span><i class="legend-up"></i>上传</span>
+                        </div>
+                    </div>
+                    <div class="chart-canvas-wrap">
+                        <canvas id="speedChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 底部操作栏 -->
+        <div class="action-bar">
+            <button class="start-btn" id="startBtn" onclick="startTest()">▶ 开始测速</button>
+            <button class="export-btn" id="exportBtn" onclick="exportReport()" disabled>📋 导出报告</button>
+            <div class="progress-text" id="progressText"></div>
+        </div>
+
+        <!-- 历史记录 -->
+        <div class="history-section" id="historySection" style="display:none;">
+            <div class="history-title">测速历史</div>
+            <div class="history-list" id="history"></div>
+        </div>
+
+        <!-- 版权 -->
+        <div class="copyright">
+            © 2026 <strong>lil-lotus</strong> · NetSpeed Pro v2.0 · 专业网络诊断工具
+        </div>
+    </div>
+
+    <!-- Toast -->
+    <div class="toast" id="toast"></div>
+
+    <!-- 引入你自己的 JS -->
+    <script src="script.js"></script>
+    
+    <!-- Cloudflare 辅助脚本 -->
+    <script>
+        window.__CF$cv$params = {
+            r: 'a44ad6751d4966db',
+            t: 'MTc5MTAxODg3OA==',
+            u: '01a0ff306d0573f1b60c50183a88b1dc',
+            ut: 'L5WbUfCYxIvjDFXQiWfkPy3xqgVig7SSNXMT9CEW_pA-1791018880-1.2.1.1-bim2UuR8UyV84z00yj5Gw6L_30iIBeQRWRN.SwH5YTrYnxMhERjYfAC8scbZQfN71bWVZuG_gPwqQiNUS03PoKTzFD4DxL0IyA_xPGOZy2A',
+            i: 60
+        };
+        (function() {
+            if (!document.body) return;
+            var s = document.createElement('script');
+            s.src = '/cdn-cgi/challenge-platform/scripts/precursor/main.js';
+            document.head.appendChild(s);
+        })();
+    </script>
+</body>
+</html>
